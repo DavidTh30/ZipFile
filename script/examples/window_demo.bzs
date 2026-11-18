@@ -1,0 +1,29 @@
+{ Drives the BGRA Zip window: opens an archive, tests it and asks before extracting.
+  Argument: archive path. Run it from the Script Editor, or with a window open. }
+var
+  Path, Dest: string;
+begin
+  if not GuiRunning then
+  begin
+    PrintErr('Open BGRA Zip first');
+    Halt(2);
+  end;
+  Path := Arg(0);
+  if Path = '' then
+    Path := Input('Archive to open', '');
+  GuiOpen(Path);
+  Print('Status: ' + GuiStatus);
+  if GuiTest then
+    Print('Test passed')
+  else
+  begin
+    PrintErr('Test FAILED');
+    Halt(1);
+  end;
+  if Confirm('Extract next to the archive?') then
+  begin
+    Dest := ChangeFileExt(Path, '');
+    GuiExtract(Dest);
+    Print('Extracted to ' + Dest);
+  end;
+end.

@@ -1,0 +1,61 @@
+{ Zips a folder into <destination>\<name>-<date>.zip, verifies it and keeps the
+  newest backups only.
+  Arguments: source folder, destination folder, [how many to keep, default 5] }
+var
+  Source, Dest, Name, Output: string;
+  Sources, Old, Problems: TStringList;
+  Keep, I, Files: Integer;
+begin
+  Source := Arg(0);
+  Dest := Arg(1);
+  if (Source = '') or (Dest = '') then
+  begin
+    PrintErr('Usage: backup_folder.bzs <source folder> <destination folder> [keep]');
+    Halt(2);
+  end;
+  Keep := StrToIntDef(Arg(2), 5);
+  if not DirExists(Source) then
+  begin
+    PrintErr('Folder not found: ' + Source);
+    Halt(2);
+  end;
+  ForceDirs(Dest);
+
+  Name := ExtractFileName(Source);
+  Output := AddSlash(Dest) + Name + '-' + FormatDateTime('yyyymmdd-hhnnss', Now) + '.zip';
+  Sources := TStringList.Create;
+  Problems := TStringList.Create;
+  try
+    Sources.Add(Source);
+    Progress(10, 'Compressing');
+    Files := CreateZip(Output, Sources, 'default', True);
+    Print(Format('Wrote %s: %d files, %s', [Output, Files, FormatSize(FileSize(Output))]));
+
+    Progress(60, 'Verifying');
+    if not TestArchive(Output, Problems) then
+    begin
+      PrintErr('Verification FAILED, keeping older backups:');
+      PrintErr(Problems.Text);
+      Halt(1);
+    end;
+    Print('Verified OK');
+
+    // names sort by date, so the oldest come first
+    Progress(90, 'Removing old backups');
+    Old := FindFiles(Dest, Name + '-*.zip', False);
+    try
+      Old.Sort;
+      for I := 0 to Old.Count - Keep - 1 do
+      begin
+        Print('Removing ' + Old[I]);
+        DeleteFile(Old[I]);
+      end;
+    finally
+      Old.Free;
+    end;
+    Progress(100, 'Done');
+  finally
+    Problems.Free;
+    Sources.Free;
+  end;
+end.

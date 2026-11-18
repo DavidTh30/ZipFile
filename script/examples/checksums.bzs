@@ -1,0 +1,56 @@
+{ Writes SHA-1 checksums for a folder, or checks them against an earlier list.
+  Arguments: folder, list file, [check] }
+var
+  Folder, ListFile, Name, Want, Got: string;
+  Files, List: TStringList;
+  I, P, Bad: Integer;
+begin
+  Folder := AddSlash(Arg(0));
+  ListFile := Arg(1);
+  if (Arg(0) = '') or (ListFile = '') then
+  begin
+    PrintErr('Usage: checksums.bzs <folder> <list file> [check]');
+    Halt(2);
+  end;
+  List := TStringList.Create;
+  try
+    if Arg(2) = 'check' then
+    begin
+      List.LoadFromFile(ListFile);
+      Bad := 0;
+      for I := 0 to List.Count - 1 do
+      begin
+        P := Pos('  ', List[I]);
+        Want := Copy(List[I], 1, P - 1);
+        Name := Copy(List[I], P + 2, Length(List[I]));
+        if not FileExists(Folder + Name) then
+          Got := 'missing'
+        else
+          Got := SHA1File(Folder + Name);
+        if Got <> Want then
+        begin
+          Bad := Bad + 1;
+          Print('DIFFERENT ' + Name);
+        end;
+      end;
+      Print(Format('%d checked, %d different', [List.Count, Bad]));
+      Halt(Bad);
+    end;
+
+    Files := FindFiles(Folder, '', True);
+    try
+      for I := 0 to Files.Count - 1 do
+      begin
+        Progress(I * 100 div Files.Count, ExtractFileName(Files[I]));
+        Name := Copy(Files[I], Length(Folder) + 1, Length(Files[I]));
+        List.Add(SHA1File(Files[I]) + '  ' + Name);
+      end;
+    finally
+      Files.Free;
+    end;
+    List.SaveToFile(ListFile);
+    Print(Format('%d files listed in %s', [List.Count, ListFile]));
+  finally
+    List.Free;
+  end;
+end.

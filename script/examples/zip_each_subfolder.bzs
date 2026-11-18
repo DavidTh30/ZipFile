@@ -1,0 +1,46 @@
+{ Makes one .zip (or .rar with "rar" as the third argument) per sub-folder.
+  Arguments: parent folder, output folder, [zip|rar] }
+var
+  Parent, Output, Kind, Target: string;
+  Dirs, Sources: TStringList;
+  I: Integer;
+begin
+  Parent := Arg(0);
+  Output := Arg(1);
+  Kind := LowerCase(Arg(2));
+  if Kind = '' then
+    Kind := 'zip';
+  if (Parent = '') or (Output = '') then
+  begin
+    PrintErr('Usage: zip_each_subfolder.bzs <parent folder> <output folder> [zip|rar]');
+    Halt(2);
+  end;
+  if (Kind = 'rar') and (RarTool(True) = '') then
+  begin
+    PrintErr('Creating .rar needs WinRAR''s rar.exe');
+    Halt(2);
+  end;
+  ForceDirs(Output);
+  Dirs := FindDirs(Parent, False);
+  Sources := TStringList.Create;
+  try
+    for I := 0 to Dirs.Count - 1 do
+    begin
+      if Stopped then
+        Break;
+      Target := AddSlash(Output) + ExtractFileName(Dirs[I]) + '.' + Kind;
+      Progress(I * 100 div Dirs.Count, Target);
+      Sources.Clear;
+      Sources.Add(Dirs[I]);
+      if Kind = 'rar' then
+        CreateRar(Target, Sources, 'default', True)
+      else
+        CreateZip(Target, Sources, 'default', True);
+      Print(Target + '  ' + FormatSize(FileSize(Target)));
+    end;
+    Print(Format('%d archives written', [Dirs.Count]));
+  finally
+    Sources.Free;
+    Dirs.Free;
+  end;
+end.

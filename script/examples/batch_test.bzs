@@ -1,0 +1,51 @@
+{ Tests every ZIP and RAR in a folder and its sub-folders, then writes a report.
+  The exit code is the number of bad archives.
+  Arguments: folder, [report file] }
+var
+  Folder, Report: string;
+  Files, Problems, Out_: TStringList;
+  I, Bad: Integer;
+begin
+  Folder := Arg(0);
+  if Folder = '' then
+    Folder := ScriptDir;
+  Files := FindFiles(Folder, '*.zip;*.rar', True);
+  Problems := TStringList.Create;
+  Out_ := TStringList.Create;
+  Bad := 0;
+  try
+    for I := 0 to Files.Count - 1 do
+    begin
+      if Stopped then
+        Break;
+      Progress(I * 100 div Files.Count, ExtractFileName(Files[I]));
+      Problems.Clear;
+      try
+        if TestArchive(Files[I], Problems) then
+          Out_.Add('OK    ' + Files[I])
+        else
+        begin
+          Bad := Bad + 1;
+          Out_.Add('BAD   ' + Files[I]);
+          Out_.AddStrings(Problems);
+        end;
+      except
+        Bad := Bad + 1;
+        Out_.Add('ERROR ' + Files[I] + ': ' + ExceptionToString(ExceptionType, ExceptionParam));
+      end;
+    end;
+    Print(Out_.Text);
+    Print(Format('%d archives, %d bad', [Files.Count, Bad]));
+    Report := Arg(1);
+    if Report <> '' then
+    begin
+      Out_.SaveToFile(Report);
+      Print('Report: ' + Report);
+    end;
+  finally
+    Out_.Free;
+    Problems.Free;
+    Files.Free;
+  end;
+  Halt(Bad);
+end.

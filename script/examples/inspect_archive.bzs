@@ -1,0 +1,32 @@
+{ Lists an archive with totals.
+  Argument: archive path. Run: bzscript inspect_archive.bzs C:\data\a.zip }
+var
+  A: TArchive;
+  I: Integer;
+  Path: string;
+begin
+  Path := Arg(0);
+  if Path = '' then
+    Path := Input('Archive to inspect', '');
+  if not FileExists(Path) then
+  begin
+    PrintErr('File not found: ' + Path);
+    Halt(2);
+  end;
+
+  A := OpenArchive(Path);
+  try
+    Print(Format('%s  (%s)', [A.FileName, A.FormatName]));
+    Print(Format('%d files, %d folders, %s unpacked, %s on disk, %s%% saved',
+      [A.FileCount, A.DirCount, FormatSize(A.TotalSize), FormatSize(A.FileSize), FloatFmt(A.SavedPercent, 1)]));
+    Print('');
+    for I := 0 to A.Count - 1 do
+      if not A.IsDir(I) then
+        Print(Format('%s  %12s  %-10s  %s',
+          [A.CRC(I), FormatSize(A.Size(I)), A.Method(I), A.Name(I)]));
+    if A.Warnings <> '' then
+      PrintErr('Warnings:' + #13#10 + A.Warnings);
+  finally
+    A.Free;
+  end;
+end.
