@@ -1,0 +1,452 @@
+object frmDevInfo: TfrmDevInfo
+  Left = 340
+  Height = 640
+  Top = 180
+  Width = 1000
+  Caption = 'BGRA Zip - Developer Information'
+  ClientHeight = 640
+  ClientWidth = 1000
+  DesignTimePPI = 96
+  Position = poDefaultPosOnly
+  ShowInTaskBar = stAlways
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  object pcMain: TPageControl
+    Left = 0
+    Height = 600
+    Top = 0
+    Width = 1000
+    ActivePage = tsOverview
+    Align = alClient
+    TabIndex = 0
+    TabOrder = 0
+    OnChange = pcMainChange
+    object tsOverview: TTabSheet
+      Caption = 'Overview'
+      ClientHeight = 572
+      ClientWidth = 992
+      object lvOverview: TListView
+        Left = 0
+        Height = 572
+        Top = 0
+        Width = 992
+        Align = alClient
+        Columns = <
+          item
+            Caption = 'Property'
+            Width = 260
+          end
+          item
+            Caption = 'Value'
+            Width = 700
+          end>
+        GridLines = True
+        ReadOnly = True
+        RowSelect = True
+        TabOrder = 0
+        ViewStyle = vsReport
+      end
+    end
+    object tsEntries: TTabSheet
+      Caption = 'Entries (raw)'
+      ClientHeight = 572
+      ClientWidth = 992
+      object lvEntries: TListView
+        Left = 0
+        Height = 312
+        Top = 0
+        Width = 992
+        Align = alClient
+        Columns = <
+          item
+            Caption = '#'
+            Width = 40
+          end
+          item
+            Caption = 'Name'
+            Width = 220
+          end
+          item
+            Caption = 'Method'
+            Width = 80
+          end
+          item
+            Caption = 'Flags'
+            Width = 60
+          end
+          item
+            Caption = 'Made by'
+            Width = 120
+          end
+          item
+            Caption = 'Needs'
+            Width = 50
+          end
+          item
+            Caption = 'DOS date/time'
+            Width = 130
+          end
+          item
+            Caption = 'CRC32'
+            Width = 75
+          end
+          item
+            Alignment = taRightJustify
+            Caption = 'Comp'
+            Width = 80
+          end
+          item
+            Alignment = taRightJustify
+            Caption = 'Uncomp'
+            Width = 80
+          end
+          item
+            Alignment = taRightJustify
+            Caption = 'Saved'
+            Width = 55
+          end
+          item
+            Alignment = taRightJustify
+            Caption = 'LocalHdr@'
+            Width = 80
+          end
+          item
+            Alignment = taRightJustify
+            Caption = 'Data@'
+            Width = 80
+          end
+          item
+            Alignment = taRightJustify
+            Caption = 'Central@'
+            Width = 80
+          end
+          item
+            Caption = 'N/E/C len'
+            Width = 70
+          end
+          item
+            Caption = 'IntAttr'
+            Width = 60
+          end
+          item
+            Caption = 'ExtAttr'
+            Width = 85
+          end
+          item
+            Caption = 'Extra IDs'
+            Width = 110
+          end
+          item
+            Caption = 'Local'
+            Width = 60
+          end>
+        GridLines = True
+        HideSelection = False
+        ReadOnly = True
+        RowSelect = True
+        TabOrder = 0
+        ViewStyle = vsReport
+        OnSelectItem = lvEntriesSelectItem
+      end
+      object splEntries: TSplitter
+        Cursor = crVSplit
+        Left = 0
+        Height = 5
+        Top = 312
+        Width = 992
+        Align = alBottom
+        ResizeAnchor = akBottom
+      end
+      object memoEntry: TMemo
+        Left = 0
+        Height = 255
+        Top = 317
+        Width = 992
+        Align = alBottom
+        Font.Height = -12
+        Font.Name = 'Consolas'
+        ParentFont = False
+        ReadOnly = True
+        ScrollBars = ssBoth
+        TabOrder = 1
+        WordWrap = False
+      end
+    end
+    object tsHex: TTabSheet
+      Caption = 'Hex / Structure'
+      ClientHeight = 572
+      ClientWidth = 992
+      object pnlHexTop: TPanel
+        Left = 0
+        Height = 36
+        Top = 0
+        Width = 992
+        Align = alTop
+        BevelOuter = bvNone
+        ClientHeight = 36
+        ClientWidth = 992
+        TabOrder = 0
+        object cbHexSource: TComboBox
+          Left = 6
+          Height = 23
+          Top = 6
+          Width = 330
+          ItemHeight = 15
+          Items.Strings = (
+            'Local file header + data (selected entry)'
+            'Central directory record (selected entry)'
+            'End of central directory (EOCD)'
+            'Zip64 EOCD record + locator'
+            'File start (first 4 KB)'
+            'File end (last 4 KB)'
+            'Custom range'
+          )
+          Style = csDropDownList
+          TabOrder = 0
+          OnChange = cbHexSourceChange
+        end
+        object lblHexOffset: TLabel
+          Left = 350
+          Height = 15
+          Top = 10
+          Width = 35
+          Caption = 'Offset'
+          ParentColor = False
+        end
+        object edtHexOffset: TEdit
+          Left = 392
+          Height = 23
+          Top = 6
+          Width = 110
+          TabOrder = 1
+          Text = '0'
+        end
+        object lblHexLen: TLabel
+          Left = 512
+          Height = 15
+          Top = 10
+          Width = 38
+          Caption = 'Length'
+          ParentColor = False
+        end
+        object edtHexLen: TEdit
+          Left = 556
+          Height = 23
+          Top = 6
+          Width = 80
+          TabOrder = 2
+          Text = '512'
+        end
+        object btnHexGo: TButton
+          Left = 644
+          Height = 25
+          Top = 5
+          Width = 75
+          Caption = 'Dump'
+          OnClick = btnHexGoClick
+          TabOrder = 3
+        end
+      end
+      object memoHex: TMemo
+        Left = 0
+        Height = 536
+        Top = 36
+        Width = 992
+        Align = alClient
+        Font.Height = -12
+        Font.Name = 'Consolas'
+        ParentFont = False
+        ReadOnly = True
+        ScrollBars = ssBoth
+        TabOrder = 1
+        WordWrap = False
+      end
+    end
+    object tsChart: TTabSheet
+      Caption = 'Chart / Layout'
+      ClientHeight = 572
+      ClientWidth = 992
+      object pbChart: TPaintBox
+        Left = 0
+        Height = 572
+        Top = 0
+        Width = 992
+        Align = alClient
+        OnPaint = pbChartPaint
+      end
+    end
+    object tsLog: TTabSheet
+      Caption = 'Log'
+      ClientHeight = 572
+      ClientWidth = 992
+      object pnlLogTop: TPanel
+        Left = 0
+        Height = 36
+        Top = 0
+        Width = 992
+        Align = alTop
+        BevelOuter = bvNone
+        ClientHeight = 36
+        ClientWidth = 992
+        TabOrder = 0
+        object btnLogClear: TButton
+          Left = 6
+          Height = 25
+          Top = 5
+          Width = 75
+          Caption = 'Clear'
+          OnClick = btnLogClearClick
+          TabOrder = 0
+        end
+        object btnLogCopy: TButton
+          Left = 86
+          Height = 25
+          Top = 5
+          Width = 75
+          Caption = 'Copy'
+          OnClick = btnLogCopyClick
+          TabOrder = 1
+        end
+        object btnLogSave: TButton
+          Left = 166
+          Height = 25
+          Top = 5
+          Width = 75
+          Caption = 'Save...'
+          OnClick = btnLogSaveClick
+          TabOrder = 2
+        end
+        object chkAutoScroll: TCheckBox
+          Left = 256
+          Height = 19
+          Top = 8
+          Width = 77
+          Caption = 'Auto-scroll'
+          Checked = True
+          State = cbChecked
+          TabOrder = 3
+        end
+      end
+      object memoLog: TMemo
+        Left = 0
+        Height = 536
+        Top = 36
+        Width = 992
+        Align = alClient
+        Font.Height = -12
+        Font.Name = 'Consolas'
+        ParentFont = False
+        ReadOnly = True
+        ScrollBars = ssBoth
+        TabOrder = 1
+        WordWrap = False
+      end
+    end
+    object tsEnv: TTabSheet
+      Caption = 'Environment'
+      ClientHeight = 572
+      ClientWidth = 992
+      object pnlEnvTop: TPanel
+        Left = 0
+        Height = 36
+        Top = 0
+        Width = 992
+        Align = alTop
+        BevelOuter = bvNone
+        ClientHeight = 36
+        ClientWidth = 992
+        TabOrder = 0
+        object btnEnvRefresh: TButton
+          Left = 6
+          Height = 25
+          Top = 5
+          Width = 75
+          Caption = 'Refresh'
+          OnClick = btnEnvRefreshClick
+          TabOrder = 0
+        end
+      end
+      object lvEnv: TListView
+        Left = 0
+        Height = 536
+        Top = 36
+        Width = 992
+        Align = alClient
+        Columns = <
+          item
+            Caption = 'Property'
+            Width = 260
+          end
+          item
+            Caption = 'Value'
+            Width = 700
+          end>
+        GridLines = True
+        ReadOnly = True
+        RowSelect = True
+        TabOrder = 1
+        ViewStyle = vsReport
+      end
+    end
+  end
+  object pnlBottom: TPanel
+    Left = 0
+    Height = 40
+    Top = 600
+    Width = 1000
+    Align = alBottom
+    BevelOuter = bvNone
+    ClientHeight = 40
+    ClientWidth = 1000
+    TabOrder = 1
+    object btnCopyReport: TButton
+      Left = 8
+      Height = 27
+      Top = 7
+      Width = 150
+      Caption = 'Copy full report'
+      OnClick = btnCopyReportClick
+      TabOrder = 0
+    end
+    object btnSaveReport: TButton
+      Left = 166
+      Height = 27
+      Top = 7
+      Width = 150
+      Caption = 'Save report...'
+      OnClick = btnSaveReportClick
+      TabOrder = 1
+    end
+    object chkStayOnTop: TCheckBox
+      Left = 330
+      Height = 19
+      Top = 11
+      Width = 88
+      Caption = 'Stay on top'
+      OnChange = chkStayOnTopChange
+      TabOrder = 2
+    end
+    object btnClose: TButton
+      Left = 912
+      Height = 27
+      Top = 7
+      Width = 80
+      Anchors = [akTop, akRight]
+      Caption = 'Close'
+      OnClick = btnCloseClick
+      TabOrder = 3
+    end
+  end
+  object dlgSave: TSaveDialog
+    DefaultExt = '.txt'
+    Filter = 'Text files (*.txt)|*.txt|All files (*.*)|*.*'
+    Options = [ofOverwritePrompt, ofEnableSizing, ofViewDetail]
+    Left = 600
+    Top = 300
+  end
+  object tmrEnv: TTimer
+    OnTimer = tmrEnvTimer
+    Left = 680
+    Top = 300
+  end
+end
