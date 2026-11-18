@@ -1,0 +1,773 @@
+object frmMain: TfrmMain
+  Left = 280
+  Height = 620
+  Top = 140
+  Width = 1080
+  AllowDropFiles = True
+  Caption = 'BGRA Zip'
+  ClientHeight = 620
+  ClientWidth = 1080
+  DesignTimePPI = 96
+  KeyPreview = True
+  Menu = mnuMain
+  Position = poScreenCenter
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnDropFiles = FormDropFiles
+  OnKeyDown = FormKeyDown
+  OnShow = FormShow
+  object pbHeader: TPaintBox
+    Left = 0
+    Height = 72
+    Top = 0
+    Width = 1080
+    Align = alTop
+    OnPaint = pbHeaderPaint
+  end
+  object pnlTools: TPanel
+    Left = 0
+    Height = 58
+    Top = 72
+    Width = 1080
+    Align = alTop
+    BevelOuter = bvNone
+    ClientHeight = 58
+    ClientWidth = 1080
+    Color = 16119285
+    ParentBackground = False
+    ParentColor = False
+    TabOrder = 0
+    object pbToolbar: TPaintBox
+      Left = 0
+      Height = 58
+      Top = 0
+      Width = 750
+      Align = alClient
+    end
+    object pnlLevel: TPanel
+      Left = 750
+      Height = 58
+      Top = 0
+      Width = 330
+      Align = alRight
+      BevelOuter = bvNone
+      ClientHeight = 58
+      ClientWidth = 330
+      Color = 16117480
+      ParentBackground = False
+      ParentColor = False
+      TabOrder = 0
+      object lblLevel: TLabel
+        Left = 8
+        Height = 15
+        Top = 8
+        Width = 69
+        Caption = 'Compression'
+        ParentColor = False
+      end
+      object cbLevel: TComboBox
+        Left = 8
+        Height = 23
+        Top = 26
+        Width = 150
+        ItemHeight = 15
+        ItemIndex = 2
+        Items.Strings = (
+          'Store (no compression)'
+          'Fastest'
+          'Default'
+          'Maximum'
+        )
+        Style = csDropDownList
+        TabOrder = 0
+        Text = 'Default'
+      end
+      object lblPassword: TLabel
+        Left = 166
+        Height = 15
+        Top = 8
+        Width = 50
+        Caption = 'Password'
+        ParentColor = False
+      end
+      object cbHideNames: TCheckBox
+        Left = 236
+        Height = 19
+        Top = 6
+        Width = 86
+        Caption = 'hide names'
+        Hint = 'RAR: encrypt the file names too, so even the list needs the password'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 2
+      end
+      object edPassword: TEdit
+        Left = 166
+        Height = 23
+        Hint = 'Password for new archives (AES-256). English letters, digits and symbols. Empty = no encryption'
+        Top = 26
+        Width = 156
+        EchoMode = emPassword
+        ParentShowHint = False
+        PasswordChar = '*'
+        ShowHint = True
+        TabOrder = 1
+        TextHint = 'none'
+      end
+    end
+  end
+  object tvFolders: TTreeView
+    Left = 0
+    Height = 440
+    Top = 130
+    Width = 260
+    Align = alLeft
+    BorderStyle = bsNone
+    HideSelection = False
+    Images = ilIcons
+    ReadOnly = True
+    RowSelect = True
+    ScrollBars = ssAutoBoth
+    TabOrder = 2
+    Options = [tvoAutoItemHeight, tvoKeepCollapsedNodes, tvoReadOnly, tvoRowSelect, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
+    OnChange = tvFoldersChange
+    OnMouseDown = tvFoldersMouseDown
+    OnMouseMove = tvFoldersMouseMove
+  end
+  object splMain: TSplitter
+    Left = 260
+    Height = 440
+    Top = 130
+    Width = 5
+  end
+  object pnlRight: TPanel
+    Left = 265
+    Height = 440
+    Top = 130
+    Width = 815
+    Align = alClient
+    BevelOuter = bvNone
+    ClientHeight = 440
+    ClientWidth = 815
+    TabOrder = 3
+    object pbPath: TPaintBox
+      Left = 0
+      Height = 30
+      Top = 0
+      Width = 815
+      Align = alTop
+      OnMouseDown = pbPathMouseDown
+      OnPaint = pbPathPaint
+    end
+  object lvFiles: TListView
+    Left = 0
+    Height = 410
+    Top = 30
+    Width = 815
+    Align = alClient
+    BorderStyle = bsNone
+    Columns = <
+      item
+        Caption = 'Name'
+        Width = 230
+      end
+      item
+        Alignment = taRightJustify
+        Caption = 'Size'
+        Width = 90
+      end
+      item
+        Alignment = taRightJustify
+        Caption = 'Packed'
+        Width = 90
+      end
+      item
+        Alignment = taRightJustify
+        Caption = 'Saved'
+        Width = 70
+      end
+      item
+        Caption = 'Method'
+        Width = 160
+      end
+      item
+        Caption = 'Modified'
+        Width = 140
+      end
+      item
+        Caption = 'CRC32'
+        Width = 200
+      end>
+    HideSelection = False
+    MultiSelect = True
+    PopupMenu = pmList
+    ReadOnly = True
+    RowSelect = True
+    SmallImages = ilIcons
+    TabOrder = 1
+    ViewStyle = vsReport
+    OnColumnClick = lvFilesColumnClick
+    OnDblClick = lvFilesDblClick
+    OnKeyDown = lvFilesKeyDown
+    OnMouseDown = lvFilesMouseDown
+    OnMouseMove = lvFilesMouseMove
+    OnSelectItem = lvFilesSelectItem
+  end
+  end
+  object pbProgress: TPaintBox
+    Left = 0
+    Height = 28
+    Top = 570
+    Width = 1080
+    Align = alBottom
+    OnPaint = pbProgressPaint
+  end
+  object sbStatus: TStatusBar
+    Left = 0
+    Height = 22
+    Top = 598
+    Width = 1080
+    Panels = <
+      item
+        Width = 220
+      end
+      item
+        Width = 120
+      end
+      item
+        Width = 50
+      end>
+    SimplePanel = False
+  end
+  object ilIcons: TImageList
+    Left = 64
+    Top = 200
+  end
+  object dlgOpenZip: TOpenDialog
+    Title = 'Open archive'
+    Filter = 'Archives (*.zip;*.rar)|*.zip;*.rar|ZIP archives (*.zip)|*.zip|RAR archives (*.rar)|*.rar|All files (*.*)|*.*'
+    Options = [ofFileMustExist, ofEnableSizing, ofViewDetail]
+    Left = 144
+    Top = 200
+  end
+  object dlgAddFiles: TOpenDialog
+    Title = 'Add files'
+    Filter = 'All files (*.*)|*.*'
+    Options = [ofAllowMultiSelect, ofFileMustExist, ofEnableSizing, ofViewDetail]
+    Left = 224
+    Top = 200
+  end
+  object dlgSaveZip: TSaveDialog
+    Title = 'Create archive'
+    DefaultExt = '.zip'
+    Filter = 'ZIP archive (*.zip)|*.zip|RAR archive - needs WinRAR rar.exe (*.rar)|*.rar'
+    Options = [ofOverwritePrompt, ofEnableSizing, ofViewDetail]
+    Left = 304
+    Top = 200
+  end
+  object dlgFolder: TSelectDirectoryDialog
+    Title = 'Select folder'
+    Left = 384
+    Top = 200
+  end
+  object pmList: TPopupMenu
+    Left = 464
+    Top = 200
+    object miShowDev: TMenuItem
+      Caption = 'Show in Developer Info'
+      OnClick = miShowDevClick
+    end
+    object miCopyName: TMenuItem
+      Caption = 'Copy name'
+      OnClick = miCopyNameClick
+    end
+    object miExtractSel: TMenuItem
+      Caption = 'Extract selected...'
+      OnClick = miExtractSelClick
+    end
+    object miRemove: TMenuItem
+      Caption = 'Remove from list'
+      OnClick = miRemoveClick
+    end
+  end
+  object mnuMain: TMainMenu
+    Left = 544
+    Top = 200
+    object miFile: TMenuItem
+      Caption = '&File'
+      OnClick = MenuPopup
+      object miFileNew: TMenuItem
+        Caption = '&New archive'
+        ShortCut = 16462
+        OnClick = miFileNewClick
+      end
+      object miFileOpen: TMenuItem
+        Caption = '&Open archive...'
+        ShortCut = 16463
+        OnClick = miFileOpenClick
+      end
+      object miFileRecent: TMenuItem
+        Caption = 'Open &recent'
+      end
+      object miFileClose: TMenuItem
+        Caption = '&Close archive'
+        ShortCut = 16471
+        OnClick = miFileNewClick
+      end
+      object miFileSep1: TMenuItem
+        Caption = '-'
+      end
+      object miFileCreate: TMenuItem
+        Caption = 'Create &archive (ZIP / RAR)...'
+        ShortCut = 16467
+        OnClick = miFileCreateClick
+      end
+      object miFileSep2: TMenuItem
+        Caption = '-'
+      end
+      object miFileShowInExplorer: TMenuItem
+        Caption = 'Show archive in &Explorer'
+        OnClick = miFileShowInExplorerClick
+      end
+      object miFileProperties: TMenuItem
+        Caption = 'Archive &properties'
+        ShortCut = 32781
+        OnClick = miFilePropertiesClick
+      end
+      object miFileSep3: TMenuItem
+        Caption = '-'
+      end
+      object miFileExit: TMenuItem
+        Caption = 'E&xit'
+        OnClick = miFileExitClick
+      end
+    end
+    object miEdit: TMenuItem
+      Caption = '&Edit'
+      OnClick = MenuPopup
+      object miEditAddFiles: TMenuItem
+        Caption = 'Add &files...'
+        ShortCut = 45
+        OnClick = miEditAddFilesClick
+      end
+      object miEditAddFolder: TMenuItem
+        Caption = 'Add f&older...'
+        OnClick = miEditAddFolderClick
+      end
+      object miEditRemove: TMenuItem
+        Caption = '&Remove from list'
+        ShortCut = 46
+        OnClick = miRemoveClick
+      end
+      object miEditSep1: TMenuItem
+        Caption = '-'
+      end
+      object miEditSelectAll: TMenuItem
+        Caption = 'Select &all'
+        ShortCut = 16449
+        OnClick = miEditSelectAllClick
+      end
+      object miEditInvert: TMenuItem
+        Caption = '&Invert selection'
+        ShortCut = 16457
+        OnClick = miEditInvertClick
+      end
+      object miEditDeselect: TMenuItem
+        Caption = '&Deselect all'
+        OnClick = miEditDeselectClick
+      end
+      object miEditSep2: TMenuItem
+        Caption = '-'
+      end
+      object miEditCopyName: TMenuItem
+        Caption = '&Copy name'
+        ShortCut = 16451
+        OnClick = miCopyNameClick
+      end
+      object miEditCopyPath: TMenuItem
+        Caption = 'Copy &path inside archive'
+        ShortCut = 24643
+        OnClick = miEditCopyPathClick
+      end
+    end
+    object miView: TMenuItem
+      Caption = '&View'
+      OnClick = MenuPopup
+      object miViewTree: TMenuItem
+        AutoCheck = True
+        Caption = 'Folder &tree'
+        Checked = True
+        OnClick = miViewToggleClick
+      end
+      object miViewToolbar: TMenuItem
+        AutoCheck = True
+        Caption = 'Tool&bar'
+        Checked = True
+        OnClick = miViewToggleClick
+      end
+      object miViewHeader: TMenuItem
+        AutoCheck = True
+        Caption = '&Header banner'
+        Checked = True
+        OnClick = miViewToggleClick
+      end
+      object miViewStatus: TMenuItem
+        AutoCheck = True
+        Caption = '&Status bar'
+        Checked = True
+        OnClick = miViewToggleClick
+      end
+      object miViewEffects: TMenuItem
+        AutoCheck = True
+        Caption = 'E&ffects'
+        Checked = True
+        OnClick = miViewEffectsClick
+      end
+      object miViewEffectOptions: TMenuItem
+        Caption = 'Effect &options...'
+        OnClick = miViewEffectOptionsClick
+      end
+      object miViewSep1: TMenuItem
+        Caption = '-'
+      end
+      object miViewUp: TMenuItem
+        Caption = 'Go &up'#9'Backspace'
+        OnClick = miViewUpClick
+      end
+      object miViewRoot: TMenuItem
+        Caption = 'Go to &root'
+        ShortCut = 16420
+        OnClick = miViewRootClick
+      end
+      object miViewExpand: TMenuItem
+        Caption = '&Expand all folders'
+        OnClick = miViewExpandClick
+      end
+      object miViewCollapse: TMenuItem
+        Caption = '&Collapse all folders'
+        OnClick = miViewCollapseClick
+      end
+      object miViewSep2: TMenuItem
+        Caption = '-'
+      end
+      object miViewSort: TMenuItem
+        Caption = 'S&ort by'
+        object miSortName: TMenuItem
+          Tag = 0
+          Caption = '&Name'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = miSortClick
+        end
+        object miSortSize: TMenuItem
+          Tag = 1
+          Caption = '&Size'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = miSortClick
+        end
+        object miSortPacked: TMenuItem
+          Tag = 2
+          Caption = '&Packed size'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = miSortClick
+        end
+        object miSortSaved: TMenuItem
+          Tag = 3
+          Caption = 'Sa&ved %'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = miSortClick
+        end
+        object miSortMethod: TMenuItem
+          Tag = 4
+          Caption = '&Method'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = miSortClick
+        end
+        object miSortModified: TMenuItem
+          Tag = 5
+          Caption = 'Mo&dified'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = miSortClick
+        end
+        object miSortCRC: TMenuItem
+          Tag = 6
+          Caption = '&CRC32 / Source path'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = miSortClick
+        end
+        object miSortSep: TMenuItem
+          Caption = '-'
+        end
+        object miSortDesc: TMenuItem
+          Caption = '&Descending'
+          OnClick = miSortDescClick
+        end
+      end
+      object miViewSep3: TMenuItem
+        Caption = '-'
+      end
+      object miViewRefresh: TMenuItem
+        Caption = '&Refresh (re-read archive)'
+        ShortCut = 116
+        OnClick = miViewRefreshClick
+      end
+    end
+    object miActions: TMenuItem
+      Caption = '&Actions'
+      OnClick = MenuPopup
+      object miActExtractAll: TMenuItem
+        Caption = '&Extract all...'
+        ShortCut = 16453
+        OnClick = miFileExtractAllClick
+      end
+      object miActExtractSel: TMenuItem
+        Caption = 'Extract &selected...'
+        OnClick = miExtractSelClick
+      end
+      object miActExtractHere: TMenuItem
+        Caption = 'Extract &here'
+        ShortCut = 24645
+        OnClick = miActExtractHereClick
+      end
+      object miActExtractSub: TMenuItem
+        Caption = 'Extract to &folder'
+        OnClick = miActExtractSubClick
+      end
+      object miActSep1: TMenuItem
+        Caption = '-'
+      end
+      object miActTest: TMenuItem
+        Caption = '&Test archive'
+        ShortCut = 16468
+        OnClick = miActTestClick
+      end
+      object miActSep2: TMenuItem
+        Caption = '-'
+      end
+      object miActLevel: TMenuItem
+        Caption = '&Compression level'
+        object miLevel0: TMenuItem
+          Tag = 0
+          Caption = '&Store (no compression)'
+          GroupIndex = 2
+          RadioItem = True
+          OnClick = miLevelClick
+        end
+        object miLevel1: TMenuItem
+          Tag = 1
+          Caption = '&Fastest'
+          GroupIndex = 2
+          RadioItem = True
+          OnClick = miLevelClick
+        end
+        object miLevel2: TMenuItem
+          Tag = 2
+          Caption = '&Default'
+          GroupIndex = 2
+          RadioItem = True
+          OnClick = miLevelClick
+        end
+        object miLevel3: TMenuItem
+          Tag = 3
+          Caption = '&Maximum'
+          GroupIndex = 2
+          RadioItem = True
+          OnClick = miLevelClick
+        end
+      end
+    end
+    object miTools: TMenuItem
+      Caption = '&Tools'
+      OnClick = MenuPopup
+      object miDefaultOpen: TMenuItem
+        Caption = 'Set &default open'
+        OnClick = miDefaultOpenClick
+        object miDefaultZip: TMenuItem
+          Caption = 'Default &ZIP'
+          OnClick = miDefaultZipClick
+        end
+        object miDefaultRar: TMenuItem
+          Caption = 'Default &RAR'
+          OnClick = miDefaultRarClick
+        end
+        object miDefaultSep: TMenuItem
+          Caption = '-'
+        end
+        object miDefaultSettings: TMenuItem
+          Caption = 'Open Windows Default apps settings...'
+          OnClick = miDefaultSettingsClick
+        end
+        object miDefaultRemove: TMenuItem
+          Caption = 'Remove BGRA Zip associations'
+          OnClick = miDefaultRemoveClick
+        end
+      end
+      object miToolsSep1: TMenuItem
+        Caption = '-'
+      end
+      object miToolsRarTools: TMenuItem
+        Caption = 'RAR &backends...'
+        OnClick = miToolsRarToolsClick
+      end
+      object miToolsCleanTemp: TMenuItem
+        Caption = '&Clean drag && drop temp folder'
+        OnClick = miToolsCleanTempClick
+      end
+    end
+    object miDev: TMenuItem
+      Caption = '&Developer'
+      OnClick = MenuPopup
+      object miDevInfo: TMenuItem
+        Caption = 'Developer &information window'
+        ShortCut = 123
+        OnClick = miDevInfoClick
+      end
+      object miDevTabs: TMenuItem
+        Caption = 'Open &tab'
+        object miDevTab0: TMenuItem
+          Tag = 0
+          Caption = '&Overview'
+          ShortCut = 16433
+          OnClick = miDevTabClick
+        end
+        object miDevTab1: TMenuItem
+          Tag = 1
+          Caption = '&Entries (raw)'
+          ShortCut = 16434
+          OnClick = miDevTabClick
+        end
+        object miDevTab2: TMenuItem
+          Tag = 2
+          Caption = '&Hex / Structure'
+          ShortCut = 16435
+          OnClick = miDevTabClick
+        end
+        object miDevTab3: TMenuItem
+          Tag = 3
+          Caption = '&Chart / Layout'
+          ShortCut = 16436
+          OnClick = miDevTabClick
+        end
+        object miDevTab4: TMenuItem
+          Tag = 4
+          Caption = '&Log'
+          ShortCut = 16437
+          OnClick = miDevTabClick
+        end
+        object miDevTab5: TMenuItem
+          Tag = 5
+          Caption = 'En&vironment'
+          ShortCut = 16438
+          OnClick = miDevTabClick
+        end
+      end
+      object miDevSep1: TMenuItem
+        Caption = '-'
+      end
+      object miDevCopyReport: TMenuItem
+        Caption = '&Copy full report'
+        ShortCut = 24644
+        OnClick = miDevCopyReportClick
+      end
+      object miDevSaveReport: TMenuItem
+        Caption = '&Save full report...'
+        OnClick = miDevSaveReportClick
+      end
+      object miDevSaveLog: TMenuItem
+        Caption = 'Save &log...'
+        OnClick = miDevSaveLogClick
+      end
+      object miDevClearLog: TMenuItem
+        Caption = 'Clear lo&g'
+        OnClick = miDevClearLogClick
+      end
+      object miDevSep2: TMenuItem
+        Caption = '-'
+      end
+      object miDevReparse: TMenuItem
+        Caption = '&Re-parse archive structure'
+        ShortCut = 24658
+        OnClick = miViewRefreshClick
+      end
+      object miDevRescanTools: TMenuItem
+        Caption = 'Re-detect RAR &tools'
+        OnClick = miDevRescanToolsClick
+      end
+      object miDevSep3: TMenuItem
+        Caption = '-'
+      end
+      object miDevOpenTemp: TMenuItem
+        Caption = 'Open drag && drop &temp folder'
+        OnClick = miDevOpenTempClick
+      end
+      object miDevOpenConfig: TMenuItem
+        Caption = 'Open &config folder'
+        OnClick = miDevOpenConfigClick
+      end
+      object miDevOpenAppDir: TMenuItem
+        Caption = 'Open &application folder'
+        OnClick = miDevOpenAppDirClick
+      end
+      object miDevSep4: TMenuItem
+        Caption = '-'
+      end
+      object miDevCmdLine: TMenuItem
+        Caption = 'Command-line &usage'
+        OnClick = miDevCmdLineClick
+      end
+      object miDevMCP: TMenuItem
+        Caption = '&MCP server && IPC...'
+        OnClick = miDevMCPClick
+      end
+      object miDevApi: TMenuItem
+        Caption = 'HTTP &API...'
+        OnClick = miDevApiClick
+      end
+    end
+    object miScript: TMenuItem
+      Caption = '&Script'
+      object miScriptEditor: TMenuItem
+        Caption = 'Script &editor...'
+        ShortCut = 24645
+        OnClick = miScriptEditorClick
+      end
+      object miScriptRunFile: TMenuItem
+        Caption = '&Run script file...'
+        OnClick = miScriptRunFileClick
+      end
+      object miScriptStop: TMenuItem
+        Caption = '&Stop running script'
+        OnClick = miScriptStopClick
+      end
+      object miScriptSep1: TMenuItem
+        Caption = '-'
+      end
+      object miScriptExamples: TMenuItem
+        Caption = 'Open e&xamples folder'
+        OnClick = miScriptExamplesClick
+      end
+    end
+    object miHelp: TMenuItem
+      Caption = '&Help'
+      object miHelpKeys: TMenuItem
+        Caption = '&Keyboard shortcuts'
+        ShortCut = 112
+        OnClick = miHelpKeysClick
+      end
+      object miHelpSep: TMenuItem
+        Caption = '-'
+      end
+      object miHelpAbout: TMenuItem
+        Caption = '&About BGRA Zip'
+        OnClick = miHelpAboutClick
+      end
+    end
+  end
+end
